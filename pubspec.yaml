@@ -89,3 +89,8 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+# UAN's adding dependencies
+dependencies:
+  flutter_reactive_ble: ^5.3.2
+  permission_handler: ^11.3.1  # already used for mic, extend for BLE
