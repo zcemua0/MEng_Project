@@ -1,3 +1,4 @@
+// Transcription STT Main Code
 //Main screen
 //From ble_connection_page.dart, navigates to offline_stt_page.dart after a placeholder BLE scan.
 //Initialises the STT model, starts/stops offline transcription, receives transcript events, and displays the transcribed text.
@@ -37,6 +38,7 @@ class _OfflineSttPageState extends State<OfflineSttPage> {
     _initialiseStt();
   }
 
+  // everytime event.type fires, transcribedText get updated!
   void _listenToNativeEvents() {
     _eventSubscription = _sttService.events.listen(
       (event) {
@@ -47,7 +49,7 @@ class _OfflineSttPageState extends State<OfflineSttPage> {
             final newText = event.message.trim();
           
             if (newText.isNotEmpty) {
-              _transcribedText = newText;
+              _transcribedText = newText;  // output update
             }
           }
         });
