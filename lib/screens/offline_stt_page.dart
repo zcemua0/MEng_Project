@@ -1,9 +1,18 @@
-// Transcription STT Main Code
 //Main screen
 //From ble_connection_page.dart, navigates to offline_stt_page.dart after a placeholder BLE scan.
 //Initialises the STT model, starts/stops offline transcription, receives transcript events, and displays the transcribed text.
 
+//_transcribedText
+//Stores the latest STT output as a normal Dart String for display in the app.
+
+//_transcribedTextUtf8Bytes
+//Stores the same STT output encoded as UTF-8 bytes. This is the variable that can later be sent over BLE to the Raspberry Pi and displayed on the OLED.
+//await _bleService.sendTextBytesToGlasses(_transcribedTextUtf8Bytes);
+
 import 'dart:async';
+
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -31,6 +40,10 @@ class _OfflineSttPageState extends State<OfflineSttPage> {
   String _status = 'Ready';
   String _transcribedText = '';
 
+  // UTF-8 encoded version of the latest STT output.
+  // This can later be sent over BLE to the Raspberry Pi / OLED.
+  Uint8List _transcribedTextUtf8Bytes = Uint8List(0);
+
   @override
   void initState() {
     super.initState();
@@ -38,7 +51,6 @@ class _OfflineSttPageState extends State<OfflineSttPage> {
     _initialiseStt();
   }
 
-  // everytime event.type fires, transcribedText get updated!
   void _listenToNativeEvents() {
     _eventSubscription = _sttService.events.listen(
       (event) {
@@ -49,8 +61,14 @@ class _OfflineSttPageState extends State<OfflineSttPage> {
             final newText = event.message.trim();
           
             if (newText.isNotEmpty) {
-              _transcribedText = newText;  // output update
+              _transcribedText = newText;
             }
+
+            // Convert the displayed transcript into UTF-8 bytes.
+            // This is the variable to send over BLE later.
+              _transcribedTextUtf8Bytes = Uint8List.fromList(
+              utf8.encode(_transcribedText),
+              );
           }
         });
       },
@@ -156,6 +174,7 @@ class _OfflineSttPageState extends State<OfflineSttPage> {
           _isListening = true;
           _status = 'Listening...';
           _transcribedText = '';
+          _transcribedTextUtf8Bytes = Uint8List(0);
         });
       }
     } catch (e) {
