@@ -14,6 +14,7 @@ class TranscriptDisplay extends StatelessWidget {
         ? 'Transcribed text will appear here...'
         : text;
 
+    // UX Design
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
