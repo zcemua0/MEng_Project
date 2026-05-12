@@ -1,3 +1,5 @@
+// updated version of this ble_connection (override Jenny's)
+
 import 'package:flutter/material.dart';
 import '../services/ble_service.dart';
 import 'offline_stt_page.dart';
