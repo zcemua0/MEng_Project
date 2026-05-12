@@ -22,7 +22,9 @@ import '../widgets/stt_control_button.dart';
 import '../widgets/transcript_display.dart';
 
 class OfflineSttPage extends StatefulWidget {
-  const OfflineSttPage({super.key});
+  final Bleservice bleService;
+
+  const OfflineSttPage({super.key, required this.bleService});
 
   @override
   State<OfflineSttPage> createState() => _OfflineSttPageState();
@@ -51,17 +53,23 @@ class _OfflineSttPageState extends State<OfflineSttPage> {
     _initialiseStt();
   }
 
+  // Listens to events from the native STT service. Updates the transcribed text and status based on incoming events.
   void _listenToNativeEvents() {
     _eventSubscription = _sttService.events.listen(
       (event) {
         if (!mounted) return;
 
+        // setting trigger
         setState(() {
           if (event.type == 'transcript') {
             final newText = event.message.trim();
           
             if (newText.isNotEmpty) {
               _transcribedText = newText;
+
+            // Send new transcript over BLE every time it updates
+            // Adding this will need to opt out line 75 - 80 ke?
+            widget.bleService.sendTextBytesToGlasses(newText);
             }
 
             // Convert the displayed transcript into UTF-8 bytes.
@@ -69,6 +77,7 @@ class _OfflineSttPageState extends State<OfflineSttPage> {
               _transcribedTextUtf8Bytes = Uint8List.fromList(
               utf8.encode(_transcribedText),
               );
+
           }
         });
       },
